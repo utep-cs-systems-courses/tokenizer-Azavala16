@@ -44,4 +44,11 @@ void print_tokens(char **tokens);
 /* Frees all tokens and the vector containing themx. */
 void free_tokens(char **tokens);
 
+void finalized_options(char *str);
+
+extern List* history;
+extern int tokenizeHistory;//boolean to avoid adding repeated history
+extern char **tokens;
+extern int gllobalid;//keep track of the current history id
+
 #endif

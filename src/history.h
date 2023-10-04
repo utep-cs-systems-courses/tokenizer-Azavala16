@@ -31,4 +31,9 @@ void print_history(List *list);
 /*Free the history list and the strings it references. */
 void free_history(List *list);
 
+char *copy_str(char *inStr, short len);
+
+extern int globalid;
+extern int newline;
+
 #endif
