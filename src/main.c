@@ -3,65 +3,70 @@
 #include "history.h"
 #include "tokenizer.h"
 
-List *history;
-int tokenizeHistory; //tokenizedHist is a boolean to avoid adding repeated history
 
 #define MAXCHARS 100
+List *history;
 char **tokens;
-int globalid;//keep track of current history id
+int globalid; 	     //keep track of current history id
+int tokenlength;
+char *specificHist;
 
-int user_options(char *str){
-	if ((str[0] == 'e' || str[0] == 'E') && str[1] == '\0') return 0;
-	else if ((str[0] == 'h' || str[0] == 'H') && str[1] == '\0'){
-		printf("To see overal history type o, to see specific history type ! followed by a number. to return to main menu press m.\n$-");
-		fgets(str, MAXCHARS, stdin);
-		
-		while(str[0] != 'm'){
-			switch(str[0]){
+int user_options(char *str){//this function will be refactored
+	char *ptr = str;
+	if ((ptr[0] == 'e' || ptr[0] == 'E') && ptr[1] == '\0') 
+		return 0;
+	else if ((ptr[0] == 'h' || ptr[0] == 'H') && ptr[1] == '\0'){
+		printf("To see overal history enter \"o\", to see specific history enter \"!\" followed by a number. to return to main menu enter \"m\".\n$-");
+		fgets(ptr, MAXCHARS, stdin);
+		while (ptr[0] != 'm'){
+			switch(ptr[0]){
 				case 'o':
 				case 'O':
 					printf("---You chose overall history---\n");
 					if (!history->root){
 						printf("List is empty, please enter some input\n$-");
-						fgets(str, MAXCHARS, stdin);
-						free_tokens(tokens);
+						fgets(ptr, MAXCHARS, stdin);
+						printf("---input succesfully added to history---\n\n");
+						add_history(history, ptr);
 					}
-					else print_history(history);
+					else 
+						print_history(history);
 					break;
 				case '!':
 					if (!history->root){
 						printf("List is empty, please enter some input\n$-");
-						fgets(str, MAXCHARS, stdin);
-						free_tokens(tokens);	
+						fgets(ptr, MAXCHARS, stdin);
+						printf("---input succesfully added to history---\n\n");
+						add_history(history, ptr);
 					}
 					else{
-						tokenizeHistory = 1;//user wants to tokenize
 						printf("Enter a number for specific history:\n");
 						printf("Current history id: %d\n$-", globalid);
-						fgets(str,MAXCHARS, stdin);
-						while(atoi(str) <= 0 || atoi(str) > globalid){
+						fgets(ptr,MAXCHARS, stdin);
+						finalized_options(ptr, token_length(ptr));
+						while(atoi(ptr) <= 0 || atoi(ptr) > globalid){
 							printf("Entered history id %s not found. please enter a valid history id:\n$-", str);
-							fgets(str,MAXCHARS, stdin);
+							fgets(ptr,MAXCHARS, stdin);
+							finalized_options(ptr, token_length(ptr));
 						
 						}
 						printf("---Tokenizing string at specific history place: %d---.\n", atoi(str));
-						char *specificHist = get_history(history, atoi(str));
+						specificHist = get_history(history, atoi(str));
 						tokens = tokenize(specificHist);
 						print_tokens(tokens);
 						free_tokens(tokens);
-						tokenizeHistory = 0;//reset to zero so tokenized history doesnt get added to history again
 					}
 					break;
 				default:
 					printf("Please enter a valid input. ");
 					break;
 			}
-			printf("To see overall history type o, to see specific history type !, To returm to the main menu press m\n$-");
-			fgets(str, MAXCHARS, stdin);
+			printf("For overall history enter \"o\". To see specific history enter \"!\". To return to the main menu enter \"m\"\n$-");
+			fgets(ptr, MAXCHARS, stdin);
 		}
 		return 2;
 	}
-	else return 1;
+	else	return 1;
 }
 
 
@@ -70,13 +75,14 @@ int main(){
 	int menuOption;
 	history = init_history();
 
-	printf("Welcome! please enter some input. Enter e to exit or h to see history.\n");
+	printf("Welcome! please enter some input. Enter \"e\" to exit or \"h\" to see history.\n");
 	while(1){
 		printf("$-");
 		fgets(input, MAXCHARS, stdin);
 		ptr = input;
 		ptr = token_start(ptr);
-		finalized_options(ptr);
+		//wont finalize sentences only options. Here tokenlength = 0
+		finalized_options(ptr, tokenlength);
 
 		menuOption = user_options(ptr);
 		switch(menuOption){
@@ -86,12 +92,11 @@ int main(){
 				return 0;
 				break;
 			case 1:
-				tokens = tokenize(ptr);
-				printf("\n---Input succesfully added to history---\n");
-				print_tokens(tokens);
+				add_history(history, ptr);
+				printf("---Input succesfully added to history---\n\n");
 				break;
 			case 2:
-				printf("Welcome! please enter some input. Enter e to exit or h to see history\n");
+				printf("Welcome! please enter some input. Enter \"e\" to exit or \"h\" to see history\n");
 			default:
 				break;
 		}
