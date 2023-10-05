@@ -43,14 +43,11 @@ int count_tokens(char *str){
 }
 
 char *copy_str(char *inStr, short len){
-	char *inStrCopy = malloc( (len+1) * sizeof(char)), loopCount = '0';//'0'
+	char *inStrCopy = malloc( (len+1) * sizeof(char));
 	int i;
 	for(i =0; i< len; i++){
-		//if (inStr[i] == '\n') { inStr[i] = '\0'; newline =1;}//change to '\0' to make sure history doesn't get new line
 		inStrCopy[i] = inStr[i];
-		loopCount++;
 	}
-		//newline=0;
 	inStrCopy[i] = '\0';
 	//printf("Wordlength for word %s: %d\n", inStrCopy, len);
 	return inStrCopy;
@@ -68,7 +65,6 @@ char **tokenize(char *str){
 		p = token_start(p);
 		length = token_terminator(p) - p;
 		tokens[i] = copy_str(p, length);
-		if (!tokenizeHistory) add_history(history, tokens[i]);//if user doesnt want to tokenize
 		p = token_terminator(p);
 	}
 	tokens[i] = '\0';
@@ -76,7 +72,7 @@ char **tokenize(char *str){
 }
 
 void print_tokens(char **tokens){
-	for(int i=0; tokens[i]; i++) printf("Token[%d]: %s\n\n", i+1, tokens[i]);
+	for(int i=0; tokens[i]; i++) printf("Token[%d]: %s\n", i+1, tokens[i]);
 }
 
 void free_tokens(char **tokens){
@@ -88,7 +84,17 @@ void free_tokens(char **tokens){
 	free(tokens);
 }
 
-void finalized_options(char *str){
-	if (str[1] == '\n') str[1] = '\0';
+void finalized_options(char *str, int length){
+	if(str[1] == '\n') str[1] = '\0';//gets rid of newline for a user option
+	if (str[length-1] == '\n') str[length-1] = '\0'; //gets rid of new line when history id not found. For %s format specifier.
 }
 
+int token_length(char *str){
+	int i=0;
+	char *holder = str;
+
+	while(holder[i] != '\0'){
+		i++;
+	}
+	return i;
+}
