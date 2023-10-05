@@ -44,11 +44,13 @@ void print_tokens(char **tokens);
 /* Frees all tokens and the vector containing themx. */
 void free_tokens(char **tokens);
 
-void finalized_options(char *str);
+/*finalizes input by getting rid of the newline from fgets() for user options*/
+void finalized_options(char *str, int length);
 
-extern List* history;
-extern int tokenizeHistory;//boolean to avoid adding repeated history
-extern char **tokens;
-extern int gllobalid;//keep track of the current history id
+int token_length(char *str);
+
+extern List* history;		//pointer to linked list
+extern char **tokens;		//double pointer for all tokens in a string
+extern int gllobalid;		//keep track of the current history id
 
 #endif
