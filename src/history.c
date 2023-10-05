@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "history.h"
 #include "tokenizer.h"
-#include <string.h>
 
 List* init_history(){
 	List *list = malloc(sizeof(List));
@@ -13,7 +12,7 @@ List* init_history(){
 
 void add_history(List *list, char *token){
 	Item *newItem = (Item*) malloc(sizeof(Item)); //pointer of items
-	newItem->str = strdup(token);
+	newItem->str = copy_str(token, token_length(token));
 	newItem->id = 1;
 
 	if (list->root == NULL){
